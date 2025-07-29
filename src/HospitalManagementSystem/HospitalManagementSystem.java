@@ -18,6 +18,11 @@ public class HospitalManagementSystem {
         }
 Scanner scanner = new Scanner(System.in);
         try{
+            /Connection is a Java interface from the java.sql package.
+            //It represents a connection to a specific database (like MySQL, PostgreSQL, Oracle)
+            //✅ 2. DriverManager.getConnection(...)
+            //DriverManager is a built-in Java class used to manage a list of database drivers.
+            //The getConnection() method tries to connect to the database
             Connection connection = DriverManager.getConnection(url, userName, password);
             Patient patient = new Patient(connection, scanner);
             Doctors doctors = new Doctors(connection);
@@ -83,8 +88,25 @@ Scanner scanner = new Scanner(System.in);
         String doctorNameQuery = "select name from doctors where id = ?";
         String doctorName = "";
         try {
+            //PreparedStatement: It's an interface from java.sql used to execute parameterized SQL queries.
+            //It's faster and safer than Statement because:It avoids SQL injection.It can be reused with different values.
+            //✅ preparedStatement (the variable)
+            //This is the variable you're declaring to hold the prepared SQL statement object.
+            //✅ connection.prepareStatement(...)
+            //You're calling the prepareStatement() method on a Connection object.It takes a SQL query string
             PreparedStatement preparedStatement = connection.prepareStatement(patientNameQuery);
             preparedStatement.setInt(1, patientId);
+            //Execute the SQL query 
+            // Returns a ResultSet object when executing a GET method, which represents the result table of data returned by the query.
+            //ResultSet resultSet: when executing a GET method
+            //You’re creating a variable to store the returned rows.
+            //This ResultSet acts like a cursor that starts before the first row
+            //✅ resultSet.next();
+            //Moves the cursor to the next row in the result set
+            //Returns:
+            //true → if there's another row.
+            //false → if there are no more rows.
+            //Must be called before accessing any data (e.g., resultSet.getString("column")).
             ResultSet resultSet = preparedStatement.executeQuery();
             resultSet.next();
             patientName = resultSet.getString("name");
@@ -108,7 +130,7 @@ Scanner scanner = new Scanner(System.in);
                     preparedStatement.setString(3, appointmentDate);
                     preparedStatement.setString(4, patientName);
                     preparedStatement.setString(5, doctorName);
-                    int rowsAffected = preparedStatement.executeUpdate();
+                    int rowsAffected = preparedStatement.executeUpdate(); // POST Query returns num of rows affected and not the ResultSet
                     if(rowsAffected>0) System.out.println("Appointment booked.");
                     else System.out.println("Appointment booking failed.");
                 } catch (SQLException e) {
